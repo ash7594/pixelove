@@ -48,6 +48,7 @@ function init () {
 				pixels[i].cR = pixels[i].R;
 				pixels[i].animate = true;
 			}
+			pixels[i].deg = (pixels[i].deg+0.7)%360;
 			pixels[i].cx = wCx + pixels[i].cR * Math.cos(pixels[i].deg * Math.PI/180);
 			pixels[i].cy = wCy + pixels[i].cR * Math.sin(pixels[i].deg * Math.PI/180);
 		} else {
