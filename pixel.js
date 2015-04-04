@@ -12,7 +12,7 @@ var wCx = canvas.width/2,
 	wCy = canvas.height/2;
 
 //////////
-var imgSize = Math.round(canvas.width*2);
+var imgSize = Math.round(canvas.width*3);
 var img;
 
 function prel() {
@@ -25,6 +25,7 @@ var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
 var key = -1;
+var keyCatered = 0;
 //////////
 
 var pixelMin = canvas.width * 0.002,
@@ -37,7 +38,10 @@ var offsetDist = canvas.width * 0.03;
 
 document.addEventListener('keydown',function (event) {
     key = event.keyCode;
-}); 
+});
+document.addEventListener('keyup',function (event) {
+	key = -1;
+});
 
 function vector(x,y,mx,my,r) {
 	this.x = x;
@@ -80,7 +84,7 @@ function init () {
 				pixels[i].cR = pixels[i].R;
 				pixels[i].animate = true;
 			}
-			pixels[i].deg = (pixels[i].deg+0.7)%360;
+			//pixels[i].deg = (pixels[i].deg+0.7)%360;
 			pixels[i].cx = wCx + pixels[i].cR * Math.cos(pixels[i].deg * Math.PI/180);
 			pixels[i].cy = wCy + pixels[i].cR * Math.sin(pixels[i].deg * Math.PI/180);
 		} else {
@@ -96,10 +100,10 @@ function init () {
 }
 
 function checkKeyPressed() {
-	if(key!=-1) {
+	if(key!=-1 && keyCatered==0) {
+		keyCatered = 1;
 		alphabet(key);
 	}
-	key = -1;
 }
 
 function alphabet(key) {
@@ -133,7 +137,20 @@ function alphabet(key) {
 }
 
 function updateAlphabet() {
-	if(trackMoves<movesToAlphabet) {
+	if(key==-1) {
+		for(var i=0;i<pixels.length;i++) {
+            pixels[i].cx -= vectors[i].mx;
+            pixels[i].cy -= vectors[i].my;
+            pixels[i].cr += vectors[i].r;
+        }
+        trackMoves--;
+		if(trackMoves==0) {
+			drawAlphabet = false;
+			vectors = [];
+			keyCatered = 0;
+		}
+	}
+	else if(trackMoves<movesToAlphabet) {
 		for(var i=0;i<pixels.length;i++) {
 			pixels[i].cx += vectors[i].mx;
             pixels[i].cy += vectors[i].my;
