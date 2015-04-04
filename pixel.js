@@ -8,6 +8,8 @@ canvas.height = window.innerHeight;
 canvas2.width = window.innerWidth*3;
 canvas2.height = window.innerHeight*3;
 
+var initing = true;
+var initValue = 0;
 var wCx = canvas.width/2,
 	wCy = canvas.height/2;
 
@@ -28,6 +30,7 @@ var key = -1;
 var keyCatered = 0;
 //////////
 
+var initSpeed = 5;
 var pixelMin = canvas.width * 0.002,
 	pixelMax = canvas.width * 0.004;
 var velMax = 10,
@@ -68,7 +71,7 @@ function pixel (r) {
 }
 
 var pixels = [];
-var np = 100;
+var np = 200;
 var tempnp = 0;
 
 function init () {
@@ -79,10 +82,11 @@ function init () {
 	for(var i=0;i<pixels.length;i++) {
 		if(pixels[i].animate == false) {
 			if(pixels[i].cR < pixels[i].R) {
-				pixels[i].cR+=3;
+				pixels[i].cR+=initSpeed;
 			} else {
 				pixels[i].cR = pixels[i].R;
 				pixels[i].animate = true;
+				initValue++;
 			}
 			//pixels[i].deg = (pixels[i].deg+0.7)%360;
 			pixels[i].cx = wCx + pixels[i].cR * Math.cos(pixels[i].deg * Math.PI/180);
@@ -97,6 +101,7 @@ function init () {
 		if(pixels[i].cr < pixels[i].r) pixels[i].cr++;
 		else pixels[i].cr = pixels[i].r;
 	}
+	if(initValue == np) initing=false;
 }
 
 function checkKeyPressed() {
@@ -168,7 +173,7 @@ function updateAlphabet() {
 
 function render () {
 	//////
-	checkKeyPressed();
+	if(!initing) checkKeyPressed();
 
 	if(!drawAlphabet) {
 		init();
