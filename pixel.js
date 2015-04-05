@@ -5,24 +5,25 @@ var canvas2 = document.getElementById("canvas2"),
 	ctx2 = canvas2.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-canvas2.width = window.innerWidth*3;
-canvas2.height = window.innerHeight*3;
 
 var initing = true;
 var initValue = 0;
 var wCx = canvas.width/2,
 	wCy = canvas.height/2;
+var initRad = canvas.width * 0.15;
 
 //////////
-var imgSize = Math.round(canvas.width*3);
+var imgSize = parseInt(16*parseInt(Math.sqrt(2)*initRad));
 var img;
+
+canvas2.width = canvas2.height = imgSize;
 
 function prel() {
 	ctx2.drawImage(sprite,0,0,imgSize,imgSize);
 }
 
 var vectors = [];
-var movesToAlphabet = 10;
+var movesToAlphabet = 50;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -35,12 +36,13 @@ var pixelMin = canvas.width * 0.002,
 	pixelMax = canvas.width * 0.004;
 var velMax = 10,
 	velMin = 1;
-var offsetDist = canvas.width * 0.03;
+var offsetDist = initRad/10;
 
 //////////
 
-document.addEventListener('keydown',function (event) {
-    key = event.keyCode;
+document.addEventListener('keypress',function (event) {
+    //if(event.charCode>
+	key = event.charCode;
 });
 document.addEventListener('keyup',function (event) {
 	key = -1;
@@ -59,7 +61,7 @@ function pixel (r) {
 	this.y = 0;
 	this.cx = 0;
 	this.cy = 0;
-	this.R = canvas.width * 0.15;
+	this.R = initRad;
 	this.cR = 0;
 	this.vx = Math.random() * (velMax - velMin) + velMin;
 	this.deg = Math.random() * 360;
@@ -113,7 +115,7 @@ function checkKeyPressed() {
 
 function alphabet(key) {
 	var num = 0;
-	img = ctx2.getImageData((key%16)*parseInt(imgSize/16),parseInt(key/16)*parseInt(imgSize/16),parseInt(imgSize/16),parseInt(imgSize/16));
+	img = ctx2.getImageData((key%16)*(imgSize/16),(parseInt(key/16)*(imgSize/16)),(imgSize/16),(imgSize/16));
 	for(var i=0;i<img.data.length;i+=4) {
 		if(img.data[i] > 0 && img.data[i] < 100) {
 			num++;
@@ -127,8 +129,8 @@ function alphabet(key) {
 	for(var i=0,j=0,k=0;j<np;i+=4) {
 		if(img.data[i] > 0 && img.data[i] < 100) {
 			if(k==0) {
-				var tx = wCx - parseInt(imgSize/16)/2 + (i/4)%parseInt(imgSize/16);
-				var ty = wCy - parseInt(imgSize/16)/2 + (i/4)/parseInt(imgSize/16);
+				var tx = wCx - (imgSize/16)/2 + (i/4)%parseInt(imgSize/16);
+				var ty = wCy - (imgSize/16)/2 + (i/4)/parseInt(imgSize/16);
 				var mx = (tx-pixels[j].cx)/movesToAlphabet;
 				var my = (ty-pixels[j].cy)/movesToAlphabet;
 				var r = (pixels[j].cr-finalPixelSize)/movesToAlphabet;
