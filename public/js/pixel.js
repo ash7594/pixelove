@@ -43,7 +43,8 @@ var offsetDist = initRad/10;
 
 document.addEventListener('keypress',function (event) {
     //if(event.charCode>
-	key = event.charCode;
+	if(event.charCode>33 && event.charCode<127)
+		key = event.charCode;
 });
 document.addEventListener('keyup',function (event) {
 	key = -1;
@@ -72,8 +73,8 @@ function pixel (r) {
 	this.deg = Math.random() * 360;
 	this.r = r;
 	this.cr = 0;
-	//this.c = "rgba("+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+",0.6)";
-	this.c = "rgba(255,255,255,0.6)";
+	this.c = "rgba("+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+",0.6)";
+	//this.c = "rgba(255,255,255,0.6)";
 	this.animate = false;
 }
 
@@ -113,8 +114,10 @@ function init () {
 
 function checkKeyPressed() {
 	if((key!=-1 && keyCatered!=key) || (key!=-1 && middlecase==1)) {
-		keyCatered = key;
-		alphabet(key);
+		if(trackMoves != movesToAlphabet) {
+			keyCatered = key;
+			alphabet(key);
+		}
 	}
 }
 
