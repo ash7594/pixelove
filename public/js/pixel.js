@@ -29,6 +29,7 @@ var drawAlphabet = false;
 var trackMoves = 0;
 var key = -1;
 var keyCatered = 0;
+var middlecase = 0;
 //////////
 
 var initSpeed = 5;
@@ -111,7 +112,7 @@ function init () {
 }
 
 function checkKeyPressed() {
-	if(key!=-1 && keyCatered!=key) {
+	if((key!=-1 && keyCatered!=key) || (key!=-1 && middlecase==1)) {
 		keyCatered = key;
 		alphabet(key);
 	}
@@ -161,6 +162,9 @@ function alphabet(key) {
 
 function updateAlphabet() {
 	if(key==-1) {
+		if(vectors[0].mx!=vectors[0].imx || vectors[0].my!=vectors[0].imy) {
+			middlecase = 1;
+		}
 		for(var i=0;i<pixels.length;i++) {
             pixels[i].cx -= vectors[i].imx;
             pixels[i].cy -= vectors[i].imy;
@@ -168,12 +172,14 @@ function updateAlphabet() {
         }
         trackMoves--;
 		if(trackMoves==0) {
+			middlecase = 0;
 			drawAlphabet = false;
 			vectors = [];
 			keyCatered = 0;
 		}
 	}
 	else if(trackMoves<movesToAlphabet) {
+		middlecase = 0;
 		for(var i=0;i<pixels.length;i++) {
 			pixels[i].cx += vectors[i].mx;
             pixels[i].cy += vectors[i].my;
