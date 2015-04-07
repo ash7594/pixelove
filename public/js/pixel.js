@@ -48,12 +48,16 @@ document.addEventListener('keyup',function (event) {
 	key = -1;
 });
 
-function vector(x,y,mx,my,r) {
+function vector(x,y,mx,my,r,ix,iy,imx,imy) {
 	this.x = x;
 	this.y = y;
 	this.mx = mx;
 	this.my = my;
 	this.r = r;
+	this.ix = ix;
+	this.iy = iy;
+	this.imx = imx;
+	this.imy = imy;
 }
 
 function pixel (r) {
@@ -107,8 +111,8 @@ function init () {
 }
 
 function checkKeyPressed() {
-	if(key!=-1 && keyCatered==0) {
-		keyCatered = 1;
+	if(key!=-1 && keyCatered!=key) {
+		keyCatered = key;
 		alphabet(key);
 	}
 }
@@ -124,17 +128,29 @@ function alphabet(key) {
 
 	//console.log(num);
 	var temp = parseInt(num/np);
-	console.log(num + " " + temp);
+	//console.log(num + " " + temp);
 
 	for(var i=0,j=0,k=0;j<np;i+=4) {
 		if(img.data[i] > 0 && img.data[i] < 100) {
 			if(k==0) {
 				var tx = wCx - (imgSize/16)/2 + (i/4)%parseInt(imgSize/16);
 				var ty = wCy - (imgSize/16)/2 + (i/4)/parseInt(imgSize/16);
-				var mx = (tx-pixels[j].cx)/movesToAlphabet;
-				var my = (ty-pixels[j].cy)/movesToAlphabet;
-				var r = (pixels[j].cr-finalPixelSize)/movesToAlphabet;
-				vectors.push(new vector(tx,ty,mx,my,r));
+				var mx = (tx-pixels[j].cx)/(movesToAlphabet-trackMoves);
+				var my = (ty-pixels[j].cy)/(movesToAlphabet-trackMoves);
+				var r = (pixels[j].cr-finalPixelSize)/(movesToAlphabet-trackMoves);
+				var ix = pixels[j].cx;
+				var iy = pixels[j].cy;
+				if(vectors.length != np) {
+					vectors.push(new vector(tx,ty,mx,my,r,ix,iy,mx,my));
+				} else {
+					vectors[j].x = tx;
+					vectors[j].y = ty;
+					vectors[j].mx = mx;
+					vectors[j].my = my;
+					vectors[j].r = r;
+					vectors[j].imx = (tx-vectors[j].ix)/(movesToAlphabet);
+					vectors[j].imy = (ty-vectors[j].iy)/(movesToAlphabet);
+				}
 				j++;
 			}
 			k = (k+1)%temp;
@@ -146,8 +162,8 @@ function alphabet(key) {
 function updateAlphabet() {
 	if(key==-1) {
 		for(var i=0;i<pixels.length;i++) {
-            pixels[i].cx -= vectors[i].mx;
-            pixels[i].cy -= vectors[i].my;
+            pixels[i].cx -= vectors[i].imx;
+            pixels[i].cy -= vectors[i].imy;
             pixels[i].cr += vectors[i].r;
         }
         trackMoves--;
