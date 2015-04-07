@@ -23,7 +23,7 @@ function prel() {
 }
 
 var vectors = [];
-var movesToAlphabet = 50;
+var movesToAlphabet = 100;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -185,6 +185,8 @@ function updateAlphabet() {
             pixels[i].cx = vectors[i].x;
             pixels[i].cy = vectors[i].y;
 			pixels[i].cr = finalPixelSize;
+			vectors[i].mx = vectors[i].imx;
+			vectors[i].my = vectors[i].imy;
         }
 	}
 }
