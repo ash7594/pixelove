@@ -23,7 +23,7 @@ function prel() {
 }
 
 var vectors = [];
-var movesToAlphabet = 100;
+var movesToAlphabet = 10;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -73,13 +73,13 @@ function pixel (r) {
 	this.deg = Math.random() * 360;
 	this.r = r;
 	this.cr = 0;
-	this.c = "rgba("+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+",0.6)";
-	//this.c = "rgba(255,255,255,0.6)";
+	//this.c = "rgba("+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+",0.6)";
+	this.c = "rgba(255,255,255,0.6)";
 	this.animate = false;
 }
 
 var pixels = [];
-var np = 200;
+var np = 400;
 var tempnp = 0;
 
 function init () {
@@ -122,6 +122,9 @@ function checkKeyPressed() {
 }
 
 function alphabet(key) {
+	
+	socket.emit("message",String.fromCharCode(key));
+	
 	var num = 0;
 	img = ctx2.getImageData((key%16)*(imgSize/16),(parseInt(key/16)*(imgSize/16)),(imgSize/16),(imgSize/16));
 	for(var i=0;i<img.data.length;i+=4) {
