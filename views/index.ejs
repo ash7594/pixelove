@@ -6,13 +6,20 @@
 		<link rel="stylesheet" href="./css/pixel.css">
 		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
         <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+		<script src="./qrcodejs/qrcode.min.js"></script>
 	</head>
 	<body>
 		<form id="nickform">
-			<span id="nickmsg">Who are you? o.O</span><br><br>
+			<h2><span id="nickmsg">Who are you? o.O</span></h2><br><br>
 			<input type="text" id="nick" maxlength="10" autocomplete="off" autofocus />
 			<input type="submit" style="display: none" />
 		</form>
+		<div id="qrcontainer">
+			<h2><span id="qrmsg">scan the code</span></h2><br><br>
+			<center>
+				<div id="qr"></div>
+			</center>
+		</div>
 		<canvas id="canvas"></canvas>
 		<canvas id="canvas2"></canvas>
 		<img id="sprite" src="./img/berlin.png"></img>
@@ -26,11 +33,27 @@
 					document.getElementById("nickmsg").innerHTML = data.msg;
 					$("#nick").val("");
 					if(data.isValid) {
-						$("nickform").hide();
-						$("#canvas").show();
+						$("#nickform").hide();
+
+						var qrcode = new QRCode("qr", {
+   	 						text: data.qrgenkey,
+    						width: 256,
+    						height: 256,
+    						correctLevel : QRCode.CorrectLevel.H
+						});
+						//document.getElementById("qr").title = "";
+						document.body.style.background = "white";
+						$("#qrcontainer").show();
+					
 					}
 				});
 				return false;
+			});
+
+			socket.on("session auth done",function() {
+				$("#qrcontainer").hide();
+				$("#canvas").show();
+				setInterval(render,17);
 			});
 			
 		</script>

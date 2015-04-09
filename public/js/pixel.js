@@ -224,5 +224,5 @@ function render () {
 	}
 }
 
-setInterval(render,17);
+//setInterval(render,17);
 window.onload = prel;
