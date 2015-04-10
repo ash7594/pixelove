@@ -29,7 +29,9 @@
 			</form>
 		</div>
 		<div id="chatcontainer">
-			<div id="chatstatements"></div>
+			<div id="chatstatements">
+				<div id="chatmsg"></div>
+			</div>
 			<div id="participants">
 				<div id="participantsv"></div>
 			</div>
@@ -48,6 +50,8 @@
 			var socket=io();
 			var nickmsg;
 			var getpinCalled = 0;
+			var prevsender = "";
+			var chat;
 
 			$("#nickform").submit(function() {
 				socket.emit("nickAuth",$("#nick").val(),function(data) {
@@ -93,6 +97,7 @@
             }
 
 			socket.on("session auth done",function() {
+				document.body.style.backgroundColor = "black";
 				$("#qrcontainer").hide();
 				$("#chatcontainer").show();
 				$("#canvas").show();
@@ -116,7 +121,15 @@
 
 			socket.on("message receive",function(data) {
 				if(!data.keyreleased) {
+					var temp = document.getElementById("chatmsg").innerHTML;
 					key	= data.message;
+					if(prevsender != data.sender) {
+						prevsender = data.sender;
+						chat = ((temp)?"<br>":"")+data.sender+": "+String.fromCharCode(data.message);
+					} else {
+						chat = String.fromCharCode(data.message);
+					}
+					document.getElementById("chatmsg").innerHTML += chat;
 				} else {
 					key = -1;
 				}

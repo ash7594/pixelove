@@ -27,6 +27,7 @@ app.get("/",function(req,res) {
 			do {
 				session = Math.floor(Math.random() * 9000 + 1000);
 			} while(sessions[session]);
+			console.log(session);
 			sessions[session] = [];
 			sessions[session].push(hashs[req.query.checksum]);
 			nicks[hashs[req.query.checksum]].join(session);
@@ -44,6 +45,12 @@ io.on("connection", function(socket) {
 	
 	socket.on("disconnect",function() {
 		console.log("disconnected");
+		if(typeof socket.nickname != "undefined") {
+			var index = sessions[socket.session].indexOf(socket.nickname);
+			sessions[socket.session].splice(index,1);
+			socket.leave(socket.session);
+			io.to(socket.session).emit("member change",sessions[socket.session]);
+		}
 	});
 
 	socket.on("message group_pressed",function(msg) {
