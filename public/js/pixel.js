@@ -4,7 +4,8 @@ var canvas = document.getElementById("canvas"),
 var canvas2 = document.getElementById("canvas2"),
 	ctx2 = canvas2.getContext('2d');
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.height = window.innerHeight * 0.71;
+//canvas.height = canvas.style.height;
 
 var initing = true;
 var initValue = 0;

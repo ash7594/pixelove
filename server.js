@@ -73,6 +73,7 @@ io.on("connection", function(socket) {
 	
 	socket.on("new session",function(sessionkey) {
 		nicks[sessions[sessionkey]].emit("session auth done");
+		nicks[sessions[sessionkey]].emit("member change",sessions[sessionkey]);
 	});
 
 	socket.on("join group",function(data,callback) {
@@ -81,6 +82,7 @@ io.on("connection", function(socket) {
 				socket.session = data;
 				sessions[data].push(socket.nickname);
 				socket.join(data);
+				io.to(socket.session).emit("member change",sessions[data]);
 				callback({ isValid: true });
 			} else {
 				callback({ isValid: false });

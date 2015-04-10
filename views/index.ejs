@@ -28,8 +28,15 @@
 				<input type="submit" style="display: none" />
 			</form>
 		</div>
-
-		<canvas id="canvas"></canvas>
+		<div id="chatcontainer">
+			<div id="chatstatements"></div>
+			<div id="participants">
+				<div id="participantsv"></div>
+			</div>
+			<div id="canvasholder">
+				<canvas id="canvas"></canvas>
+			</div>
+		</div>
 		<canvas id="canvas2"></canvas>
 		<img id="sprite" src="./img/berlin.png"></img>
 		<div id="category">
@@ -55,7 +62,7 @@
     						height: 256,
     						correctLevel : QRCode.CorrectLevel.H
 						});
-						document.getElementById("qr").title = "";
+						//document.getElementById("qr").title = "";
 						//document.body.background = "white";
 						document.getElementById("create").addEventListener("click",adminimg);
 						document.getElementById("join").addEventListener("click",memberimg);
@@ -87,6 +94,7 @@
 
 			socket.on("session auth done",function() {
 				$("#qrcontainer").hide();
+				$("#chatcontainer").show();
 				$("#canvas").show();
 				setInterval(render,17);
 			});		
@@ -96,6 +104,7 @@
 					$("#pin").val("");
 					if(data.isValid) {
 						$("#joinchatroom").hide();
+						$("#chatcontainer").show();
 						$("#canvas").show();
 						setInterval(render,17);
 					} else {
@@ -111,6 +120,13 @@
 				} else {
 					key = -1;
 				}
+			});
+
+			socket.on("member change",function(data) {
+				document.getElementById("participantsv").innerHTML = "";
+				data.forEach(function(val) {
+					document.getElementById("participantsv").innerHTML += val+"<br>";
+				});
 			});
 	
 		</script>
