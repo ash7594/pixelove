@@ -40,6 +40,7 @@ var velMax = 10,
 	velMin = 1;
 var offsetDist = initRad/10;
 var selfmsg = false;
+var spaceStruck = false;
 //////////
 
 document.addEventListener('keypress',function (event) {
@@ -47,11 +48,15 @@ document.addEventListener('keypress',function (event) {
 	if(event.charCode>33 && event.charCode<127) {
 		key = event.charCode;
 		selfmsg = true;
+	} else if(event.charCode == 32) {
+		spaceStruck = true;
+		socket.emit("message group_pressed",32);
 	}
 });
 document.addEventListener('keyup',function (event) {
 	key = -1;
 	selfmsg = false;
+	spaceStruck = false;
 	socket.emit("message group_released");
 });
 

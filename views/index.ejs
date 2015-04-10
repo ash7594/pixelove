@@ -52,6 +52,7 @@
 			var getpinCalled = 0;
 			var prevsender = "";
 			var chat;
+			var temp = document.getElementById("chatmsg").innerHTML;
 
 			$("#nickform").submit(function() {
 				socket.emit("nickAuth",$("#nick").val(),function(data) {
@@ -121,11 +122,12 @@
 
 			socket.on("message receive",function(data) {
 				if(!data.keyreleased) {
-					var temp = document.getElementById("chatmsg").innerHTML;
-					key	= data.message;
+					if(data.message != 32) {
+						key	= data.message;
+					}
 					if(prevsender != data.sender) {
 						prevsender = data.sender;
-						chat = ((temp)?"<br>":"")+data.sender+": "+String.fromCharCode(data.message);
+						chat = "<br>"+data.sender+": "+String.fromCharCode(data.message);
 					} else {
 						chat = String.fromCharCode(data.message);
 					}
