@@ -20,13 +20,27 @@
 				<div id="qr"></div>
 			</center>
 		</div>
+
+		<div id="joinchatroom">
+			<form id="joinpinform">
+				<h2><span id="pinmsg">Enter the pin</span></h2><br><br>
+				<input type="password" id="pin" maxlength="20" autocomplete="off" />
+				<input type="submit" style="display: none" />
+			</form>
+		</div>
+
 		<canvas id="canvas"></canvas>
 		<canvas id="canvas2"></canvas>
 		<img id="sprite" src="./img/berlin.png"></img>
+		<div id="category">
+			<img id="create" src="./img/admin.png" title="Create room"></img>&nbsp&nbsp&nbsp
+			<img id="join" src="./img/member.png" title="Join room"></img>
+		</div>
 		<script src="./js/pixel.js"></script>
 		<script>
 			var socket=io();
 			var nickmsg;
+			var getpinCalled = 0;
 
 			$("#nickform").submit(function() {
 				socket.emit("nickAuth",$("#nick").val(),function(data) {
@@ -41,21 +55,64 @@
     						height: 256,
     						correctLevel : QRCode.CorrectLevel.H
 						});
-						//document.getElementById("qr").title = "";
-						document.body.style.background = "white";
-						$("#qrcontainer").show();
-					
+						document.getElementById("qr").title = "";
+						//document.body.background = "white";
+						document.getElementById("create").addEventListener("click",adminimg);
+						document.getElementById("join").addEventListener("click",memberimg);
+						$("#category").show();
+						//$("#qrcontainer").show();
+						//$("#joinchatroom").show();
+						//$("#pin").focus();
 					}
 				});
 				return false;
 			});
 
+			function adminimg() {
+				document.body.style.backgroundColor = "white";
+				$("#category").hide();
+				$("#qrcontainer").show();
+				document.getElementById("create").removeEventListener("click",adminimg);
+                document.getElementById("join").removeEventListener("click",memberimg);
+			}
+
+			function memberimg() {
+                //document.body.background = "white";
+                $("#category").hide();
+                $("#joinchatroom").show();
+                $("#pin").focus();
+                document.getElementById("create").removeEventListener("click",adminimg);
+                document.getElementById("join").removeEventListener("click",memberimg);
+            }
+
 			socket.on("session auth done",function() {
 				$("#qrcontainer").hide();
 				$("#canvas").show();
 				setInterval(render,17);
+			});		
+		
+			$("#joinpinform").submit(function() {
+				socket.emit("join group",parseInt($("#pin").val()),function(data) {
+					$("#pin").val("");
+					if(data.isValid) {
+						$("#joinchatroom").hide();
+						$("#canvas").show();
+						setInterval(render,17);
+					} else {
+						document.getElementById("pinmsg").innerHTML = "Sorry! Wrong Key!";
+					}
+				});
+				return false;
 			});
-			
+
+			socket.on("message receive",function(data) {
+				if(!data.keyreleased) {
+					key	= data.message;
+				} else {
+					key = -1;
+				}
+			});
+	
 		</script>
 	</body>
 </html>

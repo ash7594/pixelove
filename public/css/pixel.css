@@ -12,11 +12,17 @@ body {
   	background-color: rgba(0,0,0,1);
 }
             
-img, canvas, #qrcontainer {
+#sprite, canvas, #qrcontainer, #joinchatroom {
   	display: none;
 }
 
-#nick {
+#category {
+	display: none;
+	padding-top: 15%;
+	text-align: center;
+}
+
+#nick, #pin {
 	font-size: 40px;
 	text-align: center;
 	color: white;
@@ -25,7 +31,11 @@ img, canvas, #qrcontainer {
 	background: rgb(0,0,0);
 }
 
-#nickmsg {
+#pin {
+	font-size: 60px !important;
+}
+
+#nickmsg, #pinmsg {
 	color: white;
 }
 
@@ -39,10 +49,10 @@ h2 {
 
 #qrcontainer {
 	text-align: center;
-	padding-top: 20%;
+	padding-top: 10%;
 }
 
 form {
 	text-align: center;
-	padding-top: 40%;
+	padding-top: 20%;
 }

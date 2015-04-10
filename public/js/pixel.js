@@ -38,16 +38,20 @@ var pixelMin = canvas.width * 0.002,
 var velMax = 10,
 	velMin = 1;
 var offsetDist = initRad/10;
-
+var selfmsg = false;
 //////////
 
 document.addEventListener('keypress',function (event) {
     //if(event.charCode>
-	if(event.charCode>33 && event.charCode<127)
+	if(event.charCode>33 && event.charCode<127) {
 		key = event.charCode;
+		selfmsg = true;
+	}
 });
 document.addEventListener('keyup',function (event) {
 	key = -1;
+	selfmsg = false;
+	socket.emit("message group_released");
 });
 
 function vector(x,y,mx,my,r,ix,iy,imx,imy) {
@@ -116,14 +120,13 @@ function checkKeyPressed() {
 	if((key!=-1 && keyCatered!=key) || (key!=-1 && middlecase==1)) {
 		if(trackMoves != movesToAlphabet) {
 			keyCatered = key;
+			if(selfmsg) socket.emit("message group_pressed",key);
 			alphabet(key);
 		}
 	}
 }
 
 function alphabet(key) {
-	
-	socket.emit("message",String.fromCharCode(key));
 	
 	var num = 0;
 	img = ctx2.getImageData((key%16)*(imgSize/16),(parseInt(key/16)*(imgSize/16)),(imgSize/16),(imgSize/16));
