@@ -11,7 +11,7 @@ var initing = true;
 var initValue = 0;
 var wCx = canvas.width/2,
 	wCy = canvas.height/2;
-var initRad = canvas.width * 0.15;
+var initRad = (canvas.width>canvas.height)?canvas.height*0.4:canvas.width*0.4;
 
 //////////
 var imgSize = parseInt(16*parseInt(Math.sqrt(2)*initRad));
@@ -24,7 +24,7 @@ function prel() {
 }
 
 var vectors = [];
-var movesToAlphabet = 10;
+var movesToAlphabet = 2;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -34,8 +34,8 @@ var middlecase = 0;
 //////////
 
 var initSpeed = 5;
-var pixelMin = canvas.width * 0.002,
-	pixelMax = canvas.width * 0.004;
+var pixelMin =(canvas.width>canvas.height)?canvas.height*0.002:canvas.width*0.002,
+	pixelMax =(canvas.width>canvas.height)?canvas.height*0.01:canvas.width*0.01;
 var velMax = 10,
 	velMin = 1;
 var offsetDist = initRad/10;
@@ -59,6 +59,38 @@ document.addEventListener('keyup',function (event) {
 	spaceStruck = false;
 	socket.emit("message group_released");
 });
+window.addEventListener('resize',resizeWindow);
+
+function resizeWindow() {
+	console.log("1");
+	key = -1;
+	middlecase = 0;
+    drawAlphabet = false;
+    vectors = [];
+    keyCatered = 0;
+
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight * 0.71;
+	
+	wCx = canvas.width/2;
+    wCy = canvas.height/2;
+	initRad = (canvas.width>canvas.height)?canvas.height*0.4:canvas.width*0.4;
+
+	imgSize = parseInt(16*parseInt(Math.sqrt(2)*initRad));
+
+	canvas2.width = canvas2.height = imgSize;
+	ctx2.clearRect(0,0,canvas2.width,canvas2.height);
+   	ctx2.drawImage(sprite,0,0,imgSize,imgSize);
+
+	pixelMin =(canvas.width>canvas.height)?canvas.height*0.002:canvas.width*0.002,
+    pixelMax =(canvas.width>canvas.height)?canvas.height*0.01:canvas.width*0.01;
+	offsetDist = initRad/10;
+
+	for(var i=0;i<pixels.length;i++) {
+		pixels[i].cR = pixels[i].R = initRad;
+		pixels[i].cr = pixels[i].r = parseInt(Math.random() * (pixelMax - pixelMin) + pixelMin);
+	}
+}
 
 function vector(x,y,mx,my,r,ix,iy,imx,imy) {
 	this.x = x;
@@ -81,7 +113,7 @@ function pixel (r) {
 	this.cR = 0;
 	this.vx = Math.random() * (velMax - velMin) + velMin;
 	this.deg = Math.random() * 360;
-	this.r = r;
+	this.r = parseInt(r);
 	this.cr = 0;
 	//this.c = "rgba("+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+","+Math.round(Math.random()*200+50)+",0.6)";
 	this.c = "rgba(255,255,255,0.6)";

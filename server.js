@@ -74,7 +74,7 @@ io.on("connection", function(socket) {
 			var random = Math.random().toString();
 			var hash = crypto.createHash('md5').update(current_date + random).digest('hex');
 			hashs[hash] = data;
-			callback({isValid: true, qrgenkey: "http://10.1.73.104:8000/?checksum="+hash});
+			callback({isValid: true, qrgenkey: "http://10.1.75.191:8000/?checksum="+hash});
 		}
 	});
 	
