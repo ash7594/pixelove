@@ -26,7 +26,7 @@ function prel() {
 }
 
 var vectors = [];
-var movesToAlphabet = 5;
+var movesToAlphabet = 10;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -35,7 +35,7 @@ var keyCatered = 0;
 var middlecase = 0;
 //////////
 
-var initSpeed = 10;
+var initSpeed = 5;
 var pixelMin =(canvas.width>canvas.height)?canvas.height*0.002:canvas.width*0.002,
 	pixelMax =(canvas.width>canvas.height)?canvas.height*0.01:canvas.width*0.01;
 var velMax = 10,
@@ -43,10 +43,12 @@ var velMax = 10,
 var offsetDist = initRad/10;
 var selfmsg = false;
 var spaceStruck = false;
+var eventsAvailable = false;
 //////////
 
 document.addEventListener('keypress',function (event) {
     //if(event.charCode>
+	if(eventsAvailable) {
 	if(event.charCode>33 && event.charCode<127) {
 		key = event.charCode;
 		selfmsg = true;
@@ -54,12 +56,15 @@ document.addEventListener('keypress',function (event) {
 		spaceStruck = true;
 		socket.emit("message group_pressed",32);
 	}
+	}
 });
 document.addEventListener('keyup',function (event) {
+	if(eventsAvailable) {
 	key = -1;
 	selfmsg = false;
 	spaceStruck = false;
 	socket.emit("message group_released");
+	}
 });
 window.addEventListener('resize',resizeWindow);
 
@@ -153,7 +158,10 @@ function init () {
 		if(pixels[i].cr < pixels[i].r) pixels[i].cr++;
 		else pixels[i].cr = pixels[i].r;
 	}
-	if(initValue == np) initing=false;
+	if(initValue == np) {
+		eventsAvailable = true;
+		initing=false;
+	}
 }
 
 function checkKeyPressed() {
