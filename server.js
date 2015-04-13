@@ -23,6 +23,10 @@ app.get("/",function(req,res) {
 		res.render("index");
 	} else {
 		if(req.query.checksum in hashs) {
+
+			if(typeof nicks[hashs[req.query.checksum]].session != "undefined") {
+				res.render("key",{key: nicks[hashs[req.query.checksum]].session});
+			} else {
 			var session;
 			do {
 				session = Math.floor(Math.random() * 9000 + 1000);
@@ -32,8 +36,9 @@ app.get("/",function(req,res) {
 			sessions[session].push(hashs[req.query.checksum]);
 			nicks[hashs[req.query.checksum]].join(session);
 			nicks[hashs[req.query.checksum]].session = session;
-			delete hashs[req.query.checksum];
+			//delete hashs[req.query.checksum];
 			res.render("key",{key: session});
+			}
 		} else {
 			res.send("<h3>Bad session or key already given...</h3>");
 		}
@@ -74,7 +79,7 @@ io.on("connection", function(socket) {
 			var random = Math.random().toString();
 			var hash = crypto.createHash('md5').update(current_date + random).digest('hex');
 			hashs[hash] = data;
-			callback({isValid: true, qrgenkey: "http://10.1.75.191:8000/?checksum="+hash});
+			callback({isValid: true, qrgenkey: "http://12af4788.ngrok.io/?checksum="+hash});
 		}
 	});
 	
@@ -101,5 +106,5 @@ io.on("connection", function(socket) {
 
 });
 
-server.listen(8000);
-console.log("Listening on port 8000...");
+server.listen(8080);
+console.log("Listening on port 8080...");
