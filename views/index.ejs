@@ -40,6 +40,7 @@
 			</div>
 		</div>
 		<canvas id="canvas2"></canvas>
+		<canvas id="canvas3" style="display: none; background-color: white"></canvas>
 		<img id="sprite" src="./img/berlin.png"></img>
 		<div id="category">
 			<img id="create" src="./img/admin.png" title="Create room"></img>&nbsp&nbsp&nbsp
@@ -127,11 +128,12 @@
 					}
 					if(prevsender != data.sender) {
 						prevsender = data.sender;
-						chat = "<br>"+data.sender+": "+String.fromCharCode(data.message);
+						chat = "<br>"+"<strong>"+data.sender+"</strong>"+": "+String.fromCharCode(data.message);
 					} else {
 						chat = String.fromCharCode(data.message);
 					}
 					document.getElementById("chatmsg").innerHTML += chat;
+					document.getElementById("chatmsg").scrollTop = document.getElementById("chatmsg").scrollHeight;
 				} else {
 					key = -1;
 				}

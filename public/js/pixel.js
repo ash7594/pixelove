@@ -3,6 +3,8 @@ var canvas = document.getElementById("canvas"),
 	ctx = canvas.getContext('2d');
 var canvas2 = document.getElementById("canvas2"),
 	ctx2 = canvas2.getContext('2d');
+var canvas3 = document.getElementById("canvas3"),
+    ctx3 = canvas3.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight * 0.71;
 //canvas.height = canvas.style.height;
@@ -18,13 +20,13 @@ var imgSize = parseInt(16*parseInt(Math.sqrt(2)*initRad));
 var img;
 
 canvas2.width = canvas2.height = imgSize;
-
+canvas3.width = canvas3.height = imgSize;
 function prel() {
 	ctx2.drawImage(sprite,0,0,imgSize,imgSize);
 }
 
 var vectors = [];
-var movesToAlphabet = 2;
+var movesToAlphabet = 5;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -33,7 +35,7 @@ var keyCatered = 0;
 var middlecase = 0;
 //////////
 
-var initSpeed = 5;
+var initSpeed = 10;
 var pixelMin =(canvas.width>canvas.height)?canvas.height*0.002:canvas.width*0.002,
 	pixelMax =(canvas.width>canvas.height)?canvas.height*0.01:canvas.width*0.01;
 var velMax = 10,
@@ -62,7 +64,7 @@ document.addEventListener('keyup',function (event) {
 window.addEventListener('resize',resizeWindow);
 
 function resizeWindow() {
-	console.log("1");
+	//console.log("1");
 	key = -1;
 	middlecase = 0;
     drawAlphabet = false;
@@ -121,7 +123,7 @@ function pixel (r) {
 }
 
 var pixels = [];
-var np = 400;
+var np = 500;
 var tempnp = 0;
 
 function init () {
@@ -169,17 +171,19 @@ function alphabet(key) {
 	var num = 0;
 	img = ctx2.getImageData((key%16)*(imgSize/16),(parseInt(key/16)*(imgSize/16)),(imgSize/16),(imgSize/16));
 	for(var i=0;i<img.data.length;i+=4) {
-		if(img.data[i] > 0 && img.data[i] < 100) {
+		if(img.data[i] > 0 && img.data[i] < 200) {
 			num++;
 		}
 	}
+	//ctx3.clearRect(0,0,canvas3.width,canvas3.height);
+	//ctx3.putImageData(img,0,0);
 
 	//console.log(num);
 	var temp = parseInt(num/np);
 	//console.log(num + " " + temp);
 
 	for(var i=0,j=0,k=0;j<np;i+=4) {
-		if(img.data[i] > 0 && img.data[i] < 100) {
+		if(img.data[i] > 0 && img.data[i] < 200) {
 			if(k==0) {
 				var tx = wCx - (imgSize/16)/2 + (i/4)%parseInt(imgSize/16);
 				var ty = wCy - (imgSize/16)/2 + (i/4)/parseInt(imgSize/16);
