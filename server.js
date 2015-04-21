@@ -50,10 +50,13 @@ io.on("connection", function(socket) {
 	
 	socket.on("disconnect",function() {
 		console.log("disconnected");
-		if(typeof socket.nickname != "undefined") {
+		if(typeof socket.nickname != "undefined" && typeof socket.session != "undefined") {
 			var index = sessions[socket.session].indexOf(socket.nickname);
 			sessions[socket.session].splice(index,1);
 			socket.leave(socket.session);
+			if(sessions[socket.session].length == 0) {
+				sessions[socket.session] = null;
+			}
 			io.to(socket.session).emit("member change",sessions[socket.session]);
 		}
 	});
@@ -79,7 +82,7 @@ io.on("connection", function(socket) {
 			var random = Math.random().toString();
 			var hash = crypto.createHash('md5').update(current_date + random).digest('hex');
 			hashs[hash] = data;
-			callback({isValid: true, qrgenkey: "http://12af4788.ngrok.io/?checksum="+hash});
+			callback({isValid: true, qrgenkey: "http://1ecfe75b.ngrok.io/?checksum="+hash});
 		}
 	});
 	
