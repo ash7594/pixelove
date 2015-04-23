@@ -6,7 +6,7 @@ var canvas2 = document.getElementById("canvas2"),
 var canvas3 = document.getElementById("canvas3"),
     ctx3 = canvas3.getContext('2d');
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight * 0.71;
+canvas.height = window.innerHeight * 0.60;
 //canvas.height = canvas.style.height;
 
 var initing = true;
@@ -77,7 +77,7 @@ function resizeWindow() {
     keyCatered = 0;
 
 	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight * 0.71;
+	canvas.height = window.innerHeight * 0.60;
 	
 	wCx = canvas.width/2;
     wCy = canvas.height/2;
@@ -161,6 +161,7 @@ function init () {
 	if(initValue == np) {
 		eventsAvailable = true;
 		initing=false;
+		$("#footermsg").html("Welcome to Pixelove! Enjoy our services");
 	}
 }
 

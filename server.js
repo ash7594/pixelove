@@ -1,4 +1,6 @@
 var express = require("express");
+var mysql = require("mysql");
+var mysqlCred = require("mysqlCred");
 var app = express();
 
 app.use(express.static(__dirname + "/public"));
@@ -32,6 +34,7 @@ app.get("/",function(req,res) {
 				session = Math.floor(Math.random() * 9000 + 1000);
 			} while(sessions[session]);
 			console.log(session);
+			createRecordRoomID(req.query.checksum, session);
 			sessions[session] = [];
 			sessions[session].push(hashs[req.query.checksum]);
 			nicks[hashs[req.query.checksum]].join(session);
@@ -82,11 +85,12 @@ io.on("connection", function(socket) {
 			var random = Math.random().toString();
 			var hash = crypto.createHash('md5').update(current_date + random).digest('hex');
 			hashs[hash] = data;
-			callback({isValid: true, qrgenkey: "http://1ecfe75b.ngrok.io/?checksum="+hash});
+			callback({isValid: true, qrgenkey: "http://localhost:8080/?checksum="+hash});
 		}
 	});
 	
 	socket.on("new session",function(sessionkey) {
+		createRecordUsers(sessionkey, sessions[sessionkey][0]);
 		nicks[sessions[sessionkey]].emit("session auth done");
 		nicks[sessions[sessionkey]].emit("member change",sessions[sessionkey]);
 	});
@@ -94,6 +98,7 @@ io.on("connection", function(socket) {
 	socket.on("join group",function(data,callback) {
 		if(typeof data != "undefined") {
 			if(sessions[data]) {
+				createRecordUsers(data, socket.nickname);
 				socket.session = data;
 				sessions[data].push(socket.nickname);
 				socket.join(data);
@@ -108,6 +113,45 @@ io.on("connection", function(socket) {
 	});
 
 });
+
+var pool = mysql.createPool({
+	connectionLimit: 100,
+	host: "localhost",
+	user: mysqlCred.user(),
+	password: mysqlCred.password(),
+	database: "pixelove",
+	debug: false
+});
+
+function createRecordRoomID(session, roomid) {
+	pool.getConnection(function(err,connection) {
+		if(err) {
+			connection.release();
+			return;
+		}
+		var values = { sessionHash: session, roomId: roomid };
+		connection.query("insert into roomAuth set ?",values,function (err,result) {
+			connection.release();
+			if(err) throw err;
+			else console.log(result);
+		});
+	});
+}
+
+function createRecordUsers(roomid, nickname) {
+	pool.getConnection(function(err,connection) {
+		if(err) {
+			connection.release();
+			return;
+		}
+		var values = { roomId: roomid, nick: nickname };
+		connection.query("insert into roomUsers set ?",values,function (err,result) {
+			connection.release();
+			if(err) throw err;
+			else console.log(result);
+		});
+	});
+}
 
 server.listen(8080);
 console.log("Listening on port 8080...");
