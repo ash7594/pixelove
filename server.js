@@ -83,7 +83,7 @@ io.on("connection", function(socket) {
 		if(!roombids[socket.session][0].start) {
 			roombids[socket.session][0].start = true;
 			io.to(socket.session).emit("new token possession",{token:socket.nickname,time:chatTime,bid:0});
-			setTimeout(nextSpeaker(socket.session),chatTime * 1000);
+			setTimeout(function() {nextSpeaker(socket.session);},chatTime * 1000);
 		}
 		roombids[socket.session][0].msg += String.fromCharCode(msg);
 		io.to(socket.session).emit("message receive",{sender:socket.nickname,message:msg,keyreleased:false});
@@ -143,7 +143,7 @@ io.on("connection", function(socket) {
                 	connection.release();
                 	return;
             	}
-            	var values = { userId: rows, bidAmt: data };
+            	var values = { userId: rows[0].userId, bidAmt: data };
             	connection.query("insert into bids set ?",values,function (err,result) {
                 	connection.release();
                 	if(err) throw err;
@@ -152,9 +152,9 @@ io.on("connection", function(socket) {
         	});
     	});
 
-		if(data >= roomBids[socket.session][1].bid) {
-			roomBids[socket.session][1].bid = data;
-			roomBids[socket.session][1].token = socket.nickname;
+		if(data >= roombids[socket.session][1].bid) {
+			roombids[socket.session][1].bid = data;
+			roombids[socket.session][1].token = socket.nickname;
 		}
 	});
 
@@ -171,7 +171,7 @@ function nextSpeaker(session) {
 				connection.release();
 				return;
 			}
-			var values = { userId: rows, chat: roombids[session][0].msg, timestamp: NOW() };
+			var values = { userId: rows[0].userId, chat: roombids[session][0].msg };
         	connection.query("insert into chatlog set ?",values,function (err,result) {
             	connection.release();
             	if(err) throw err;
@@ -183,7 +183,9 @@ function nextSpeaker(session) {
     roombids[session][0].token = roombids[session][1].token;
     roombids[session][0].bid = roombids[session][1].bid;
     roombids[session][0].msg = "";
+	roombids[session][1].bid = 0;
     io.to(session).emit("new token possession",{token:roombids[session][0].token,time:chatTime,bid:roombids[session][0].bid});
+	setTimeout(function() {nextSpeaker(session);},chatTime * 1000);
 }
 
 function createRecordRoomID(session, roomid) {

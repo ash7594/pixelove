@@ -26,7 +26,7 @@ function prel() {
 }
 
 var vectors = [];
-var movesToAlphabet = 100;
+var movesToAlphabet = 10;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -51,6 +51,7 @@ var bidding = false;
 var biddingKey = -1;
 var bidVelocity = 1;
 var hasToken = false;
+var onlyBeginning = true;
 //////////
 
 document.addEventListener('keydown',function (event) {
@@ -183,7 +184,10 @@ function init () {
 	if(initValue == np) {
 		eventsAvailable = true;
 		initing=false;
-		$("#footermsg").html("Hello! Welcome to Pixelove!");
+		if(onlyBeginning) {
+			onlyBeginning = false;
+			$("#footermsg").html("Hello! Welcome to Pixelove!");
+		}
 	}
 }
 
