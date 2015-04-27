@@ -180,6 +180,10 @@ function nextSpeaker(session) {
 		});
 	});
 
+	if(roombids[session][1].bid == 0) {
+		roombids[session][1].token = sessions[session][parseInt(Math.random()*sessions[session].length)];
+	}
+
     roombids[session][0].token = roombids[session][1].token;
     roombids[session][0].bid = roombids[session][1].bid;
     roombids[session][0].msg = "";
