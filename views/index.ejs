@@ -9,7 +9,8 @@
 		<script src="./qrcodejs/qrcode.min.js"></script>
 	</head>
 	<body>
-		<div id="bidcounter">
+		<div id="bidtimercontainer" class="bidandtimer">30</div>
+		<div id="bidcounter" class="bidandtimer">
             <img class="top" src="./img/arrow.png" /><br>
             <div id="bid">0</div>
             <img class="bottom" src="./img/arrow2.png" />
@@ -63,8 +64,10 @@
 			var prevsender = "";
 			var chat;
 			var temp = document.getElementById("chatmsg").innerHTML;
+			var me;
 
 			$("#nickform").submit(function() {
+				me = $("#nick").val();
 				socket.emit("nickAuth",$("#nick").val(),function(data) {
 					document.getElementById("nickmsg").innerHTML = data.msg;
 					$("#nick").val("");
@@ -108,10 +111,11 @@
             }
 
 			socket.on("session auth done",function() {
+				hasToken = true;
 				document.body.style.backgroundColor = "black";
 				$("#qrcontainer").hide();
 				$("#chatcontainer").show();
-				$('#bidcounter').show();
+				$('.bidandtimer').show();
 				$('.footer').show();
 				$("#canvas").show();
 				setInterval(render,17);
@@ -123,7 +127,7 @@
 					if(data.isValid) {
 						$("#joinchatroom").hide();
 						$("#chatcontainer").show();
-						$('#bidcounter').show();
+						$('.bidandtimer').show();
 						$('.footer').show();
 						$("#canvas").show();
 						setInterval(render,17);
@@ -157,6 +161,17 @@
 				data.forEach(function(val) {
 					document.getElementById("participantsv").innerHTML += val+"<br>";
 				});
+			});
+
+			socket.on("new token possession",function(data) {
+				$("#footermsg").html("Token owner: "+data.token+" - Bid: "+data.bid);
+				hasToken = false;
+				if(data.token == me) {
+					hasToken = true;
+				} else {
+					bidAvailable -= bidNow;
+					setTimeout(function(){socket.emit("bidSet",bidNow);});
+				}
 			});
 	
 		</script>

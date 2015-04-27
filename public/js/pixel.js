@@ -26,7 +26,7 @@ function prel() {
 }
 
 var vectors = [];
-var movesToAlphabet = 10;
+var movesToAlphabet = 100;
 var finalPixelSize = 1;
 var drawAlphabet = false;
 var trackMoves = 0;
@@ -45,25 +45,47 @@ var selfmsg = false;
 var spaceStruck = false;
 var eventsAvailable = false;
 //////////
+var bidAvailable = 100;
+var bidNow = 0;
+var bidding = false;
+var biddingKey = -1;
+var bidVelocity = 1;
+var hasToken = false;
+//////////
+
+document.addEventListener('keydown',function (event) {
+	if(eventsAvailable && !hasToken) {
+        if(event.keyCode==38 || event.keyCode==40) {
+            bidding = true;
+            biddingKey = event.keyCode;
+        }
+	}
+});
 
 document.addEventListener('keypress',function (event) {
     //if(event.charCode>
-	if(eventsAvailable) {
-	if(event.charCode>33 && event.charCode<127) {
-		key = event.charCode;
-		selfmsg = true;
-	} else if(event.charCode == 32) {
-		spaceStruck = true;
-		socket.emit("message group_pressed",32);
-	}
+	if(eventsAvailable && hasToken) {
+		if(event.charCode>33 && event.charCode<127) {
+			key = event.charCode;
+			selfmsg = true;
+		} else if(event.charCode == 32) {
+			spaceStruck = true;
+			socket.emit("message group_pressed",32);
+		}
 	}
 });
 document.addEventListener('keyup',function (event) {
 	if(eventsAvailable) {
-	key = -1;
-	selfmsg = false;
-	spaceStruck = false;
-	socket.emit("message group_released");
+		if(!hasToken) {
+			bidding = false;
+			biddingKey = -1;
+			bidVelocity = 1;
+		} else {
+			key = -1;
+			selfmsg = false;
+			spaceStruck = false;
+			socket.emit("message group_released");
+		}
 	}
 });
 window.addEventListener('resize',resizeWindow);
@@ -161,11 +183,15 @@ function init () {
 	if(initValue == np) {
 		eventsAvailable = true;
 		initing=false;
-		$("#footermsg").html("Welcome to Pixelove! Enjoy our services");
+		$("#footermsg").html("Hello! Welcome to Pixelove!");
 	}
 }
 
 function checkKeyPressed() {
+	if(bidding) {
+		handleBid(); 
+	}
+
 	if((key!=-1 && keyCatered!=key) || (key!=-1 && middlecase==1)) {
 		if(trackMoves != movesToAlphabet) {
 			keyCatered = key;
@@ -173,6 +199,20 @@ function checkKeyPressed() {
 			alphabet(key);
 		}
 	}
+}
+
+function handleBid() {
+	if(biddingKey == 38) {
+		bidNow += bidVelocity;
+		bidNow = parseInt(bidNow);
+		if(bidNow>bidAvailable) bidNow = bidAvailable;
+	} else {
+		bidNow -= bidVelocity;
+		bidNow = parseInt(bidNow);
+		if(bidNow<0) bidNow = 0;
+	}
+	bidVelocity *= 1.1;
+	$("#bid").html(bidNow);
 }
 
 function alphabet(key) {
