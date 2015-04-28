@@ -176,8 +176,9 @@
 			socket.on("new token possession",function(data) {
 				$("#footermsg").html("Token owner: "+data.token+" - Bid: "+data.bid);
 				hasToken = false;
-				$("#bidtimercontainer").html("0");
+				$("#bid").html("0");
 				if(data.token == me) {
+					pixelsColor = "rgba(255,255,255,0.6)";
 					hasToken = true;
 					bidAvailable -= bidNow;
 					bidNow = 0;
@@ -186,6 +187,7 @@
 					clearInterval(timerHandle);
 					timerHandle = setInterval(countdown,1000);
 				} else {
+					pixelsColor = "rgba(255,0,0,0.6)";
 					bidNow = 0;
 					setTimeout(function(){socket.emit("bidSet",bidNow);},(data.time-5)*1000);
 				}

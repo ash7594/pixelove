@@ -35,6 +35,7 @@ var keyCatered = 0;
 var middlecase = 0;
 //////////
 
+var pixelsColor = "rgba(255,255,255,0.6)";
 var initSpeed = 5;
 var pixelMin =(canvas.width>canvas.height)?canvas.height*0.002:canvas.width*0.002,
 	pixelMax =(canvas.width>canvas.height)?canvas.height*0.01:canvas.width*0.01;
@@ -315,7 +316,7 @@ function render () {
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(var i=0;i<pixels.length;i++) {
 		ctx.beginPath();
-		ctx.fillStyle = pixels[i].c;
+		ctx.fillStyle = pixelsColor;
 		ctx.arc(pixels[i].cx,pixels[i].cy,pixels[i].cr,0,2*Math.PI);
 		ctx.closePath();
 		ctx.fill();
