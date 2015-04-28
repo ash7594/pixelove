@@ -86,6 +86,7 @@ io.on("connection", function(socket) {
 			setTimeout(function() {nextSpeaker(socket.session);},chatTime * 1000);
 		}
 		roombids[socket.session][0].msg += String.fromCharCode(msg);
+		//console.log(roombids[socket.session][0].msg);
 		io.to(socket.session).emit("message receive",{sender:socket.nickname,message:msg,keyreleased:false});
 		//io.emit("message receive",{sender:socket.nickname,message:msg,keyreleased:false})
 	});
@@ -105,7 +106,7 @@ io.on("connection", function(socket) {
 			var random = Math.random().toString();
 			var hash = crypto.createHash('md5').update(current_date + random).digest('hex');
 			hashs[hash] = data;
-			callback({isValid: true, qrgenkey: "http://localhost:8080/?checksum="+hash});
+			callback({isValid: true, qrgenkey: "http://aadb535d.ngrok.io/?checksum="+hash});
 		}
 	});
 	
@@ -148,14 +149,19 @@ io.on("connection", function(socket) {
                 	connection.release();
                 	if(err) throw err;
                 	//else console.log(result);
+					if(data >= roombids[socket.session][1].bid) {
+            			roombids[socket.session][1].bid = data;
+            			roombids[socket.session][1].token = socket.nickname;
+        			}
             	});
         	});
     	});
 
+		/*
 		if(data >= roombids[socket.session][1].bid) {
 			roombids[socket.session][1].bid = data;
 			roombids[socket.session][1].token = socket.nickname;
-		}
+		}*/
 	});
 
 });
@@ -171,17 +177,30 @@ function nextSpeaker(session) {
 				connection.release();
 				return;
 			}
-			var values = { userId: rows[0].userId, chat: roombids[session][0].msg };
-        	connection.query("insert into chatlog set ?",values,function (err,result) {
+			var values = { userId: rows[0].userId, message: roombids[session][0].msg };
+        	console.log(values);
+			connection.query("insert into chatdata set ?",values,function (err,result) {
             	connection.release();
             	if(err) throw err;
+				if(roombids[session][1].bid == 0) {
+        //roombids[session][1].token = sessions[session][parseInt(Math.random()*sessions[session].length)];
+        			roombids[session][1].token = sessions[session][0];
+    			}
+
+    			roombids[session][0].token = roombids[session][1].token;
+    			roombids[session][0].bid = roombids[session][1].bid;
+    			roombids[session][0].msg = "";
+    			roombids[session][1].bid = 0;
+    			io.to(session).emit("new token possession",{token:roombids[session][0].token,time:chatTime,bid:roombids[session][0].bid});
+    			setTimeout(function() {nextSpeaker(session);},chatTime * 1000);
             	//else console.log(result);
         	});
 		});
 	});
-
+	/*
 	if(roombids[session][1].bid == 0) {
-		roombids[session][1].token = sessions[session][parseInt(Math.random()*sessions[session].length)];
+		//roombids[session][1].token = sessions[session][parseInt(Math.random()*sessions[session].length)];
+		roombids[session][1].token = sessions[session][0];
 	}
 
     roombids[session][0].token = roombids[session][1].token;
@@ -190,6 +209,7 @@ function nextSpeaker(session) {
 	roombids[session][1].bid = 0;
     io.to(session).emit("new token possession",{token:roombids[session][0].token,time:chatTime,bid:roombids[session][0].bid});
 	setTimeout(function() {nextSpeaker(session);},chatTime * 1000);
+	*/
 }
 
 function createRecordRoomID(session, roomid) {

@@ -176,13 +176,14 @@
 			socket.on("new token possession",function(data) {
 				$("#footermsg").html("Token owner: "+data.token+" - Bid: "+data.bid);
 				hasToken = false;
-				$("#bidtimercontainer").html(0);
+				$("#bidtimercontainer").html("0");
 				if(data.token == me) {
 					hasToken = true;
-					bitAvailable -= bidNow;
+					bidAvailable -= bidNow;
 					bidNow = 0;
 					timerTime = data.time;
-					$("#bidtimercontainer").html(timerTime);
+					$("#bidtimercontainer").html(""+timerTime);
+					clearInterval(timerHandle);
 					timerHandle = setInterval(countdown,1000);
 				} else {
 					bidNow = 0;
