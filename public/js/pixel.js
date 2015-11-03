@@ -225,7 +225,7 @@ function alphabet(key) {
 	var num = 0;
 	img = ctx2.getImageData((key%16)*(imgSize/16),(parseInt(key/16)*(imgSize/16)),(imgSize/16),(imgSize/16));
 	for(var i=0;i<img.data.length;i+=4) {
-		if(img.data[i] > 0 && img.data[i] < 200) {
+		if(img.data[i] >= 0 && img.data[i] < 100) {
 			num++;
 		}
 	}
@@ -237,7 +237,7 @@ function alphabet(key) {
 	//console.log(num + " " + temp);
 
 	for(var i=0,j=0,k=0;j<np;i+=4) {
-		if(img.data[i] > 0 && img.data[i] < 200) {
+		if(img.data[i] >= 0 && img.data[i] < 100) {
 			if(k==0) {
 				var tx = wCx - (imgSize/16)/2 + (i/4)%parseInt(imgSize/16);
 				var ty = wCy - (imgSize/16)/2 + (i/4)/parseInt(imgSize/16);

@@ -106,7 +106,7 @@ io.on("connection", function(socket) {
 			var random = Math.random().toString();
 			var hash = crypto.createHash('md5').update(current_date + random).digest('hex');
 			hashs[hash] = data;
-			callback({isValid: true, qrgenkey: "http://localhost:8080/?checksum="+hash});
+			callback({isValid: true, qrgenkey: "http://10.1.75.254:8080/?checksum="+hash});
 		}
 	});
 	
